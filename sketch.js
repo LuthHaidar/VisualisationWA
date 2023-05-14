@@ -24,8 +24,8 @@ function draw() {
     drawPolygon(poly);
   }
   fill(0);
-  text('Press any key to generate a new watercolor', width/2 - 200, height / 2 - 450)
-  text('Press s to save the current watercolor', width/2 - 200, height /2 - 400)
+  text('Press any key to generate a new watercolor', width/2 - 200, height / 2 - 350)
+  text('Press s to save the current watercolor', width/2 - 200, height / 2 - 300)
   noLoop();
 }
 
