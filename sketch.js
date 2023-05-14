@@ -1,11 +1,9 @@
-//Need to fix Variance
-//edges should extend more
-//midpoints can be anywhere along the line, following gaussian randomness
-
-let DEPTH = 5;
-let BASE_DEFORMATION = 7;
-let TOTAL_LAYERS = 100;
-let OPACITY = 10;
+const DEPTH = 5;
+const BASE_DEFORMATION = 7;
+const TOTAL_LAYERS = 100;
+const OPACITY = 4;
+const RADIUS = 150;
+const SIDES = 6;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -16,11 +14,11 @@ function setup() {
 
 function draw() {
   background(255);
-  let points = generateBasePolygon(width/2, height/2, 150, 6);
-  let basePolygon = watercolor(points, BASE_DEFORMATION);
+  let points = generateBasePolygon(width/2, height/2, RADIUS, SIDES);
+  let basePolygon = generateWatercolor(points, BASE_DEFORMATION);
   for (let i = 0; i < TOTAL_LAYERS; i++) {
-    let poly = watercolor(basePolygon, DEPTH);
-    fill(220, 100, 95, OPACITY);
+    let poly = generateWatercolor(basePolygon, DEPTH);
+    fill(225, 0, 0, OPACITY);
     drawPolygon(poly);
   }
 }
@@ -48,12 +46,12 @@ function generateBasePolygon(centerX, centerY, radius, sides) {
   return points;
 }
 
-function watercolor(points, depth) {
+function generateWatercolor(points, depth) {
     if (depth === 0) {
         return points;
     }
     let newPoints = [];
-    let scaleFactor = 1.5;
+    const scaleFactor = 1.5;
     for (let i = 0; i < points.length; i++) {
         let a = points[i];
         let c = points[(i + 1) % points.length];
@@ -64,5 +62,5 @@ function watercolor(points, depth) {
         let b_prime = createVector(b.x + variance * cos(direction), b.y + variance * sin(direction));
         newPoints.push(a, b_prime);
     }
-    return watercolor(newPoints, depth - 1);
+    return generateWatercolor(newPoints, depth - 1);
 }
