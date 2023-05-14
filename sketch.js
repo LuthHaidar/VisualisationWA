@@ -1,9 +1,9 @@
-const DEPTH = 5;
-const BASE_DEFORMATION = 7;
+const DEPTH = 4;
+const BASE_DEFORMATION = 4;
 const TOTAL_LAYERS = 100;
 const OPACITY = 4;
 const RADIUS = 150;
-const SIDES = 6;
+const SIDES = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -47,20 +47,24 @@ function generateBasePolygon(centerX, centerY, radius, sides) {
 }
 
 function generateWatercolor(points, depth) {
-    if (depth === 0) {
-        return points;
-    }
-    let newPoints = [];
-    const scaleFactor = 1.5;
-    for (let i = 0; i < points.length; i++) {
-        let a = points[i];
-        let c = points[(i + 1) % points.length];
-        let b = midpoint(a, c);
-        let edgeWeight = random(0.5, 4.0);
-        let variance = randomGaussian(0, depth) * scaleFactor * edgeWeight;
-        let direction = atan2(c.y - a.y, c.x - a.x) + HALF_PI;
-        let b_prime = createVector(b.x + variance * cos(direction), b.y + variance * sin(direction));
-        newPoints.push(a, b_prime);
-    }
-    return generateWatercolor(newPoints, depth - 1);
+  if (depth === 0) {
+      return points;
+  }
+  let newPoints = [];
+  const scaleFactor = 4;
+  for (let i = 0; i < points.length; i++) {
+      let a = points[i];
+      let c = points[(i + 1) % points.length];
+      let edgeWeight = random(0.5, 4.0);
+      let maxVariance = dist(a.x, a.y, c.x, c.y) / 2;
+      let variance = randomGaussian(0, depth) * scaleFactor * edgeWeight;
+      variance = constrain(variance, -maxVariance, maxVariance);
+      let position = randomGaussian(0.5, 0.15);
+      let b_prime = createVector(
+          lerp(a.x, c.x, position) + variance * cos(atan2(c.y - a.y, c.x - a.x) + HALF_PI),
+          lerp(a.y, c.y, position) + variance * sin(atan2(c.y - a.y, c.x - a.x) + HALF_PI)
+      );
+      newPoints.push(a, b_prime);
+  }
+  return generateWatercolor(newPoints, depth - 1);
 }
