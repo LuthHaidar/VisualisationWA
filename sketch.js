@@ -1,94 +1,38 @@
-let baseDeformation = 4;
-let additionalDeformation = 4;
-let totalLayers = 150;
-let opacityPerLayer = 4;
-let radius = 200;
-let sides = 10;
+var baseDeformation = 4;
+var additionalDeformation = 4;
+var totalLayers = 150;
+var opacityPerLayer = 5;
+var radius = 200;
+var sides = 10;
+
+function preload() {
+  //https://unsplash.com/photos/xz485Eku8O4?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink
+  //Photo by Annie Spratt on Unsplash
+  img = loadImage('\annie-spratt-xz485Eku8O4-unsplash.jpg');
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  background(255);
+  image(img, 0, 0, width, height);
   noStroke();
-  font = loadFont('assets/RobotoMono-Regular.ttf');
-  textSize(20);
-/*
-  // Create a new GUI
+
+  //dropdown menu using dat.gui
   var gui = new dat.GUI();
-
+  
   // Add some parameters
-  var baseDeformationControl = gui.add({
-    baseDeformation: 4
-  }, 'base deformation', 0, 20, 1);
-
-  var additionalDeformationControl = gui.add({
-    additionalDeformation: 4
-  }, 'additional deformation', 0, 20, 1);
-
-  var totalLayersControl = gui.add({
-    totalLayers: 150
-  }, 'total layers', 0, 200, 1);
-
-  var opacityPerLayerControl = gui.add({
-    opacityPerLayer: 4
-  }, 'opacity per layer', 0, 10, 1);
-
-  var radiusControl = gui.add({
-    radius: 200
-  }, 'radius', 0, 500, 1);
-
-  var sidesControl = gui.add({
-    sides: 10
-  }, 'sides', 3, 20, 1);
-
-  var newWatercolour = gui.add({
-    newWatercolour: function() {
-      redraw();
-    }
-  }, 'new watercolour');
-
-  var saveWatercolour = gui.add({
-    saveWatercolour: function() {
-      saveCanvas('watercolour', 'png');
-    }
-  } , 'save watercolour');
-
-  // Listen for changes to the parameters
-  baseDeformationControl.onChange(function(value) {
-    baseDeformation = value;
-  });
-
-  additionalDeformationControl.onChange(function(value) {
-    additionalDeformation = value;
-  });
-
-  totalLayersControl.onChange(function(value) {
-    totalLayers = value;
-  });
-
-  opacityPerLayerControl.onChange(function(value) {
-    opacityPerLayer = value;
-  });
-
-  radiusControl.onChange(function(value) {
-    radius = value;
-  });
-
-  sidesControl.onChange(function(value) {
-    sides = value;
-  });
-
-  newWatercolour.onChange(function() {
-    redraw();
-  });
-
-  saveWatercolour.onChange(function() {
-    saveCanvas('watercolour', 'png');
-  });
-  */
+  var baseDeformationControl = gui.add(window, 'baseDeformation', 0, 10, 1);
+  var additionalDeformationControl = gui.add(window, 'additionalDeformation', 0, 10, 1);
+  var totalLayersControl = gui.add(window, 'totalLayers', 0, 400, 1);
+  var opacityPerLayerControl = gui.add(window, 'opacityPerLayer', 0, 255, 1);
+  var radiusControl = gui.add(window, 'radius', 0, 500, 1);
+  var sidesControl = gui.add(window, 'sides', 3, 20, 1);
+  var parameterDefaults = gui.add(window, 'parameterDefaults');
+  var newWatercolour = gui.add(window, 'redraw');
+  var saveWatercolour = gui.add(window, 'saveWatercolour');
 }
 
 function draw() {
-  background(255);
+  image(img, 0, 0, width, height);
   let colour = color(random(255), random(255), random(255), opacityPerLayer);
   let points = generateBasePolygon(width/2, height/2, radius, sides);
   let basePolygon = generateWatercolor(points, baseDeformation);
@@ -141,4 +85,18 @@ function generateWatercolor(points, depth) {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+}
+
+function saveWatercolour() {
+  saveCanvas("watercolour", "png");
+}
+
+function parameterDefaults() {
+  baseDeformation = 4;
+  additionalDeformation = 4;
+  totalLayers = 150;
+  opacityPerLayer = 5;
+  radius = 200;
+  sides = 10;
+  redraw();
 }
