@@ -1,9 +1,9 @@
-const DEPTH = 4;
-const BASE_DEFORMATION = 4;
-const TOTAL_LAYERS = 150;
-const OPACITY = 4;
-const RADIUS = 200;
-const SIDES = 10;
+let baseDeformation = 4;
+let additionalDeformation = 4;
+let totalLayers = 150;
+let opacityPerLayer = 4;
+let radius = 200;
+let sides = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -11,21 +11,92 @@ function setup() {
   noStroke();
   font = loadFont('assets/RobotoMono-Regular.ttf');
   textSize(20);
+/*
+  // Create a new GUI
+  var gui = new dat.GUI();
+
+  // Add some parameters
+  var baseDeformationControl = gui.add({
+    baseDeformation: 4
+  }, 'base deformation', 0, 20, 1);
+
+  var additionalDeformationControl = gui.add({
+    additionalDeformation: 4
+  }, 'additional deformation', 0, 20, 1);
+
+  var totalLayersControl = gui.add({
+    totalLayers: 150
+  }, 'total layers', 0, 200, 1);
+
+  var opacityPerLayerControl = gui.add({
+    opacityPerLayer: 4
+  }, 'opacity per layer', 0, 10, 1);
+
+  var radiusControl = gui.add({
+    radius: 200
+  }, 'radius', 0, 500, 1);
+
+  var sidesControl = gui.add({
+    sides: 10
+  }, 'sides', 3, 20, 1);
+
+  var newWatercolour = gui.add({
+    newWatercolour: function() {
+      redraw();
+    }
+  }, 'new watercolour');
+
+  var saveWatercolour = gui.add({
+    saveWatercolour: function() {
+      saveCanvas('watercolour', 'png');
+    }
+  } , 'save watercolour');
+
+  // Listen for changes to the parameters
+  baseDeformationControl.onChange(function(value) {
+    baseDeformation = value;
+  });
+
+  additionalDeformationControl.onChange(function(value) {
+    additionalDeformation = value;
+  });
+
+  totalLayersControl.onChange(function(value) {
+    totalLayers = value;
+  });
+
+  opacityPerLayerControl.onChange(function(value) {
+    opacityPerLayer = value;
+  });
+
+  radiusControl.onChange(function(value) {
+    radius = value;
+  });
+
+  sidesControl.onChange(function(value) {
+    sides = value;
+  });
+
+  newWatercolour.onChange(function() {
+    redraw();
+  });
+
+  saveWatercolour.onChange(function() {
+    saveCanvas('watercolour', 'png');
+  });
+  */
 }
 
 function draw() {
   background(255);
-  let colour = color(random(255), random(255), random(255), OPACITY);
-  let points = generateBasePolygon(width/2, height/2, RADIUS, SIDES);
-  let basePolygon = generateWatercolor(points, BASE_DEFORMATION);
-  for (let i = 0; i < TOTAL_LAYERS; i++) {
-    let poly = generateWatercolor(basePolygon, DEPTH);
+  let colour = color(random(255), random(255), random(255), opacityPerLayer);
+  let points = generateBasePolygon(width/2, height/2, radius, sides);
+  let basePolygon = generateWatercolor(points, baseDeformation);
+  for (let i = 0; i < totalLayers; i++) {
+    let poly = generateWatercolor(basePolygon, additionalDeformation);
     fill(colour);
     drawPolygon(poly);
   }
-  fill(0);
-  text('Press any key to generate a new watercolor', width/2 - 200, height / 2 - 350)
-  text('Press s to save the current watercolor', width/2 - 200, height / 2 - 300)
   noLoop();
 }
 
@@ -53,7 +124,7 @@ function generateWatercolor(points, depth) {
       return points;
   }
   let newPoints = [];
-  const scaleFactor = 5;
+  let scaleFactor = 5;
   for (let i = 0; i < points.length; i++) {
       let a = points[i];
       let c = points[(i + 1) % points.length];
@@ -70,14 +141,4 @@ function generateWatercolor(points, depth) {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-}
-
-function keyPressed() { //save canvas without text
-  if (key === 's' || key === 'S') {
-    saveCanvas('watercolor', 'png');
-  }
-}
-
-function mousePressed() {
-  redraw();
 }
