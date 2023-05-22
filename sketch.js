@@ -5,6 +5,7 @@ var totalLayers = 150;
 var opacityPerLayer = 5;
 var radius = 200;
 var sides = 10;
+var numWatercolors = 1;
 
 // Preload canvas texture
 function preload() {
@@ -27,30 +28,81 @@ function setup() {
   var opacityPerLayerControl = gui.add(window, 'opacityPerLayer', 0, 255, 1);
   var radiusControl = gui.add(window, 'radius', 0, 500, 1);
   var sidesControl = gui.add(window, 'sides', 3, 20, 1);
-  var parameterDefaults = gui.add(window, 'parameterDefaults');
+  var numWatercolorsControl = gui.add(window, 'numWatercolors', 1, 10, 1);
   var newWatercolour = gui.add(window, 'redraw');
   var saveWatercolour = gui.add(window, 'saveWatercolour');
+
+  var guiContainer = document.querySelector('.dg.ac');
+
+  // Add an event listener to the GUI container to prevent mouse interaction
+  guiContainer.addEventListener('mousedown', function(event) {
+    event.stopPropagation();
+  });
+
+  // Listen for changes
+  baseDeformationControl.onFinishChange(function(value) {
+    baseDeformation = value;
+    redraw();
+  });
+
+  additionalDeformationControl.onFinishChange(function(value) {
+    additionalDeformation = value;
+    redraw();
+  });
+
+  totalLayersControl.onFinishChange(function(value) {
+    totalLayers = value;
+    redraw();
+  });
+
+  opacityPerLayerControl.onFinishChange(function(value) {
+    opacityPerLayer = value;
+    redraw();
+  });
+
+  radiusControl.onFinishChange(function(value) {
+    radius = value;
+    redraw();
+  });
+
+  sidesControl.onFinishChange(function(value) {
+    sides = value;
+    redraw();
+  });
+
+  numWatercolorsControl.onFinishChange(function(value) {
+    numWatercolors = value;
+    redraw();
+  });
 }
 
 // Draw the watercolor effect on the canvas
 function draw() {
+  let colours = []
+  let basePolygons = []
   // Display the loaded image on the canvas
   image(img, 0, 0, width, height);
 
-  // Generate a random color with the given opacity
-  let colour = color(random(255), random(255), random(255), opacityPerLayer);
+  for (let i = 0; i < numWatercolors; i++) {
+    // Generate a random color with the given opacity
+    let colour = color(random(255), random(255), random(255), opacityPerLayer);
 
-  // Generate a base polygon with the given radius and number of sides
-  let points = generateBasePolygon(width/2, height/2, radius, sides);
-
-  // Generate the initial watercolor effect on the base polygon
-  let basePolygon = generateWatercolor(points, baseDeformation);
+    // Generate a random polygon with the given radius and number of sides
+    let points = generateBasePolygon(width/2 + random(-width/3, width/3), height/2 + random(-height/3, height/3), radius, sides);
+    
+    // Apply the watercolor effect on the initial watercolor polygon
+    let basePolygon = generateWatercolor(points, baseDeformation);
+    colours.push(colour);
+    basePolygons.push(basePolygon);
+  }
 
   // Apply additional layers of the watercolor effect on the initial watercolor polygon
   for (let i = 0; i < totalLayers; i++) {
-    let poly = generateWatercolor(basePolygon, additionalDeformation);
-    fill(colour);
-    drawPolygon(poly);
+    for (let j = 0; j < numWatercolors; j++) {
+      let poly = generateWatercolor(basePolygons[j], additionalDeformation);
+      fill(colours[j]);
+      drawPolygon(poly);
+    }
   }
 
   // Stop looping after one iteration to prevent unnecessary processing
@@ -112,15 +164,4 @@ function windowResized() {
 // Save the watercolor image as a PNG file
 function saveWatercolour() {
   saveCanvas("watercolour", "png");
-}
-
-// Reset all parameters to their default values
-function parameterDefaults() {
-  baseDeformation = 4;
-  additionalDeformation = 4;
-  totalLayers = 150;
-  opacityPerLayer = 5;
-  radius = 200;
-  sides = 10;
-  redraw();
 }
